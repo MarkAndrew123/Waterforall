@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Heart, Upload } from "lucide-react";
+import { Heart, Upload, BarChart3 } from "lucide-react";
 
 export default function CTASection() {
   return (
@@ -21,6 +21,12 @@ export default function CTASection() {
             <Button className="bg-water-blue text-white px-8 py-3 text-lg font-semibold hover:bg-blue-600 transition-colors smooth-transition">
               <Upload className="mr-2 h-5 w-5" />
               Upload Excel Data
+            </Button>
+          </Link>
+          <Link href="/wash-analysis">
+            <Button className="bg-clean-green text-white px-8 py-3 text-lg font-semibold hover:bg-green-600 transition-colors smooth-transition">
+              <BarChart3 className="mr-2 h-5 w-5" />
+              WASH Analysis
             </Button>
           </Link>
         </div>

@@ -10,6 +10,7 @@ export default function Navigation() {
   const navItems = [
     { path: "/", label: "Home" },
     { path: "/dashboard", label: "Analytics Dashboard" },
+    { path: "/wash-analysis", label: "WASH Analysis" },
     { path: "/gallery", label: "Photo Gallery" },
   ];
 
@@ -27,7 +28,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Droplets className="text-water-blue text-2xl mr-3" />
-            <h1 className="text-xl font-semibold text-dark-gray">Water Aid Impact</h1>
+            <h1 className="text-xl font-semibold text-dark-gray">Water for All Initiative</h1>
           </div>
           
           <div className="hidden md:flex space-x-8">

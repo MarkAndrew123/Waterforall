@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center mb-4">
               <Droplets className="text-water-blue text-2xl mr-3" />
-              <h3 className="text-xl font-bold">Water Aid Impact</h3>
+              <h3 className="text-xl font-bold">Water for All Initiative</h3>
             </div>
             <p className="text-gray-300">
               Transforming lives through clean water, sanitation, and hygiene programs worldwide.
@@ -29,11 +29,11 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-300">
               <li className="flex items-center">
                 <Phone className="mr-2 h-4 w-4" />
-                +1-800-WATER-AID
+                08057478738
               </li>
               <li className="flex items-center">
                 <Mail className="mr-2 h-4 w-4" />
-                info@wateraidimpact.org
+                info@waterforallinitiative.com
               </li>
               <li className="flex items-center">
                 <MapPin className="mr-2 h-4 w-4" />
@@ -60,7 +60,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-gray-600 mt-8 pt-8 text-center text-gray-300">
-          <p>&copy; 2024 Water Aid Impact. All rights reserved.</p>
+          <p>&copy; 2024 Water for All Initiative. All rights reserved.</p>
         </div>
       </div>
     </footer>

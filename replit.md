@@ -1,8 +1,8 @@
-# Water Aid Impact Dashboard
+# Water for All Initiative Dashboard
 
 ## Overview
 
-This is a full-stack web application for managing and visualizing water aid projects worldwide. The application serves as a comprehensive platform for tracking water projects, managing statistics, and showcasing impact through interactive dashboards and photo galleries.
+This is a full-stack web application for managing and visualizing water aid projects worldwide. The application serves as a comprehensive platform for tracking water projects, managing statistics, showcasing impact through interactive dashboards and photo galleries, and analyzing WASH League Table indicators compliance.
 
 ## User Preferences
 
@@ -53,6 +53,7 @@ RESTful API endpoints for:
 ### User Interface Components
 - **Home Page**: Hero section with impact statistics and mission information
 - **Analytics Dashboard**: Interactive data visualization with upload capabilities
+- **WASH Analysis**: WASH League Table indicators mapping and compliance analysis
 - **Photo Gallery**: Filtered image gallery with modal views
 - **Navigation**: Responsive navigation with mobile menu support
 
@@ -62,6 +63,25 @@ RESTful API endpoints for:
 2. **Data Processing**: Statistics are aggregated and projects are tracked with real-time updates
 3. **Data Visualization**: Dashboard components query the API to display charts, metrics, and project status
 4. **Content Management**: Gallery images are categorized and displayed with filtering capabilities
+
+## Recent Updates (January 2025)
+
+### Contact Information Update
+- **Organization Name**: Changed from "Water Aid Impact" to "Water for All Initiative"
+- **Phone**: Updated to 08057478738
+- **Email**: Updated to info@waterforallinitiative.com
+
+### WASH League Table Integration
+- **New WASH Analysis Page**: Added comprehensive mapping of WASH League Table indicators
+- **Indicator Categories**: Policy/Legal Framework, Urban Water Supply, Small Town WASH, Rural WASH, Urban Sanitation
+- **Status Tracking**: Covered (5), Partial (4), Missing (12) out of 21 total indicators
+- **Gap Analysis**: Identifies missing data collection areas and enhancement opportunities
+- **Export Functionality**: Analysis reports and recommendations generation
+
+### Current Data Coverage Assessment
+- **Strong Areas**: Rural water coverage, sanitation access, hygiene programs
+- **Improvement Needed**: Urban service quality, policy documentation, financial sustainability metrics
+- **Missing Elements**: Customer satisfaction, wastewater management, institutional frameworks
 
 ## External Dependencies
 

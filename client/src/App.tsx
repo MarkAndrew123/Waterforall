@@ -8,6 +8,7 @@ import Footer from "@/components/footer";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Gallery from "@/pages/gallery";
+import WashAnalysis from "@/pages/wash-analysis";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/gallery" component={Gallery} />
+      <Route path="/wash-analysis" component={WashAnalysis} />
       <Route component={NotFound} />
     </Switch>
   );
