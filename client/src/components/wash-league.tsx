@@ -36,7 +36,7 @@ const nigerianStates: StateData[] = [
     "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
 ].map((name, index) => ({
     rank: index + 1,
-    name: name + " State",
+    name: name === "FCT Abuja" ? "FCT Abuja" : name + " State",
     points: 0,
     waterAccess: 0,
     sanitation: 0,
