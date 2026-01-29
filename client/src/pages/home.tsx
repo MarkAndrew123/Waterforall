@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import HeroSection from "@/components/hero-section";
-import ImpactStats from "@/components/impact-stats";
-import MissionSection from "@/components/mission-section";
-import CrisisFacts from "@/components/crisis-facts";
+import MissionVisionSection from "@/components/mission-vision-section";
+import GlobalScoreCard from "@/components/global-score-card";
 import CTASection from "@/components/cta-section";
 
 export default function Home() {
@@ -29,11 +28,10 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="pt-16"> {/* Account for fixed navigation */}
+    <div>
       <HeroSection />
-      <ImpactStats />
-      <MissionSection />
-      <CrisisFacts />
+      <MissionVisionSection />
+      <GlobalScoreCard />
       <CTASection />
     </div>
   );

@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Aid Impact Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'water-blue': '#0080C7',
+                        'clean-green': '#00A651',
+                        'impact-orange': '#FFB700',
+                        'light-gray': '#F8FAFB',
+                        'dark-gray': '#333333'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'open-sans': ['Open Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .counter-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #0080C7;
+        }
+        
+        .smooth-transition {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0080C7 0%, #00A651 100%);
+            transition: width 2s ease-in-out;
+        }
+        
+        .nav-tab {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tab.active {
+            background-color: #0080C7;
+            color: white;
+        }
+        
+        .nav-tab:hover {
+            background-color: #0080C7;
+            color: white;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoom 0.6s;
+        }
+        
+        @keyframes zoom {
+            from {transform: scale(0)}
+            to {transform: scale(1)}
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-white font-open-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-tint text-water-blue text-2xl mr-3"></i>
+                    <h1 class="text-xl font-inter font-bold text-dark-gray">Water Aid Impact</h1>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-white" onclick="showSection('home')">Home</button>
+                    <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-white" onclick="showSection('dashboard')">Analytics Dashboard</button>
+                    <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-white" onclick="showSection('gallery')">Photo Gallery</button>
+                    <button class="bg-water-blue text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-blue-600 transition-colors">Donate Now</button>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-gray-900">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden bg-white shadow-lg hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" onclick="showSection('home')">Home</button>
+                <button class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" onclick="showSection('dashboard')">Analytics Dashboard</button>
+                <button class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" onclick="showSection('gallery')">Photo Gallery</button>
+                <button class="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-water-blue text-white hover:bg-blue-600">Donate Now</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="section-content">
+        <!-- Hero Section -->
+        <div class="relative bg-gradient-to-r from-water-blue to-clean-green text-white parallax-bg" style="background-image: linear-gradient(rgba(0, 128, 199, 0.8), rgba(0, 166, 81, 0.8)), url('https://pixabay.com/get/ga1632f5cc17cc24a1c582eda290061017da4aa51b87c148fd515bed9d02d03112ce6ff1c17ec6bfed0cf5762c29af5499e806f24973de0e21ca23533cefee4c8_1280.jpg');">
+            <div class="absolute inset-0 bg-gradient-to-r from-water-blue/80 to-clean-green/80"></div>
+            <div class="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-6xl font-inter font-bold mb-6 fade-in">
+                        Change Starts with Water
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto fade-in">
+                        Just <span class="font-bold text-impact-orange">$50</span> can provide one person with safe & reliable water. Together, we can end the water crisis.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 fade-in">
+                        <button class="bg-impact-orange text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-600 transition-colors smooth-transition">
+                            <i class="fas fa-heart mr-2"></i>
+                            Donate Now
+                        </button>
+                        <button class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-water-blue transition-colors smooth-transition" onclick="showSection('dashboard')">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            View Impact Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Impact Statistics -->
+        <div class="py-16 bg-light-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-inter font-bold text-dark-gray mb-4">Our Global Impact</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Real-time data showing the lives we've transformed through clean water, sanitation, and hygiene programs worldwide.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover smooth-transition fade-in">
+                        <div class="text-water-blue mb-4">
+                            <i class="fas fa-users text-4xl"></i>
+                        </div>
+                        <div class="counter-number" data-target="896000">0</div>
+                        <p class="text-gray-600 font-medium">People with Clean Water Access</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover smooth-transition fade-in">
+                        <div class="text-clean-green mb-4">
+                            <i class="fas fa-school text-4xl"></i>
+                        </div>
+                        <div class="counter-number" data-target="74844">0</div>
+                        <p class="text-gray-600 font-medium">Students in Schools with Clean Water</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover smooth-transition fade-in">
+                        <div class="text-impact-orange mb-4">
+                            <i class="fas fa-home text-4xl"></i>
+                        </div>
+                        <div class="counter-number" data-target="252599">0</div>
+                        <p class="text-gray-600 font-medium">People with Decent Toilets</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover smooth-transition fade-in">
+                        <div class="text-purple-600 mb-4">
+                            <i class="fas fa-hospital text-4xl"></i>
+                        </div>
+                        <div class="counter-number" data-target="872030">0</div>
+                        <p class="text-gray-600 font-medium">People in Health Centers with Better Hygiene</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Statement -->
+        <div class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="fade-in">
+                        <!-- A group of children drinking clean water from a well in a rural village -->
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&h=600" alt="Children accessing clean water" class="rounded-xl shadow-lg w-full h-auto">
+                    </div>
+                    <div class="fade-in">
+                        <h2 class="text-3xl md:text-4xl font-inter font-bold text-dark-gray mb-6">
+                            We Won't Stop Until Everyone, Everywhere Has Clean Water
+                        </h2>
+                        <p class="text-lg text-gray-600 mb-6">
+                            703 million people are still living without clean water close to home. Working alongside communities, we won't stop until everyone, everywhere has access to clean water, decent toilets and good hygiene.
+                        </p>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-clean-green text-xl mr-3"></i>
+                                <span class="text-gray-700">Sustainable water projects that last for generations</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-clean-green text-xl mr-3"></i>
+                                <span class="text-gray-700">Complete transparency in every donation</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-clean-green text-xl mr-3"></i>
+                                <span class="text-gray-700">Working directly with local communities</span>
+                            </div>
+                        </div>
+                        <button class="mt-8 bg-water-blue text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors smooth-transition">
+                            Learn More About Our Work
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Water Crisis Facts -->
+        <div class="py-16 bg-gradient-to-r from-water-blue to-clean-green text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-inter font-bold mb-4">The Water Crisis by Numbers</h2>
+                    <p class="text-lg max-w-3xl mx-auto">Understanding the scale of the global water crisis helps us work together toward solutions.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center fade-in">
+                        <div class="text-6xl font-bold text-impact-orange mb-2">1 in 10</div>
+                        <p class="text-lg">People worldwide lack access to clean water</p>
+                    </div>
+                    <div class="text-center fade-in">
+                        <div class="text-6xl font-bold text-impact-orange mb-2">1 in 4</div>
+                        <p class="text-lg">Children will face water scarcity by 2040</p>
+                    </div>
+                    <div class="text-center fade-in">
+                        <div class="text-6xl font-bold text-impact-orange mb-2">2 billion</div>
+                        <p class="text-lg">People lack safely managed sanitation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="py-16 bg-light-gray">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl md:text-4xl font-inter font-bold text-dark-gray mb-6">Ready to Make a Difference?</h2>
+                <p class="text-lg text-gray-600 mb-8">Every donation, no matter the size, brings us one step closer to a world where everyone has access to clean water.</p>
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button class="bg-impact-orange text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-600 transition-colors smooth-transition">
+                        <i class="fas fa-heart mr-2"></i>
+                        Make a Donation
+                    </button>
+                    <button class="bg-water-blue text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors smooth-transition" onclick="showSection('dashboard')">
+                        <i class="fas fa-upload mr-2"></i>
+                        Upload Excel Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics Dashboard Section -->
+    <section id="dashboard" class="section-content hidden">
+        <div class="pt-20 pb-16 bg-light-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-inter font-bold text-dark-gray mb-4">Analytics Dashboard</h2>
+                    <p class="text-lg text-gray-600">Interactive data visualization and reporting tools for water aid projects</p>
+                </div>
+
+                <!-- Excel Upload Section -->
+                <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                    <h3 class="text-2xl font-inter font-bold text-dark-gray mb-6">Upload Excel Data</h3>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-water-blue transition-colors">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-lg text-gray-600 mb-4">Drag and drop your Excel file here, or click to browse</p>
+                        <input type="file" id="excel-upload" accept=".xlsx,.xls" class="hidden">
+                        <button onclick="document.getElementById('excel-upload').click()" class="bg-water-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+                            <i class="fas fa-file-excel mr-2"></i>
+                            Choose File
+                        </button>
+                        <p class="text-sm text-gray-500 mt-2">Supported formats: .xlsx, .xls</p>
+                    </div>
+                </div>
+
+                <!-- Dashboard Controls -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                        <div class="flex items-center space-x-4">
+                            <label class="text-gray-700 font-medium">Filter by:</label>
+                            <select class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-water-blue">
+                                <option>All Regions</option>
+                                <option>Sub-Saharan Africa</option>
+                                <option>South Asia</option>
+                                <option>East Asia</option>
+                                <option>Latin America</option>
+                            </select>
+                            <select class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-water-blue">
+                                <option>All Time</option>
+                                <option>2024</option>
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="bg-water-blue text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-download mr-2"></i>
+                                Export Data
+                            </button>
+                            <button class="bg-clean-green text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors">
+                                <i class="fas fa-sync mr-2"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover smooth-transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Projects</p>
+                                <p class="text-2xl font-bold text-water-blue">2,663</p>
+                            </div>
+                            <div class="bg-water-blue/10 p-3 rounded-full">
+                                <i class="fas fa-project-diagram text-water-blue text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-arrow-up text-green-500 text-sm mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium">12%</span>
+                                <span class="text-gray-500 text-sm ml-2">vs last month</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover smooth-transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Water Flowing</p>
+                                <p class="text-2xl font-bold text-clean-green">96%</p>
+                            </div>
+                            <div class="bg-clean-green/10 p-3 rounded-full">
+                                <i class="fas fa-tint text-clean-green text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 96%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover smooth-transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Countries</p>
+                                <p class="text-2xl font-bold text-impact-orange">34</p>
+                            </div>
+                            <div class="bg-impact-orange/10 p-3 rounded-full">
+                                <i class="fas fa-globe text-impact-orange text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-arrow-up text-green-500 text-sm mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium">3</span>
+                                <span class="text-gray-500 text-sm ml-2">new countries</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover smooth-transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Funding Raised</p>
+                                <p class="text-2xl font-bold text-purple-600">$44.8M</p>
+                            </div>
+                            <div class="bg-purple-600/10 p-3 rounded-full">
+                                <i class="fas fa-dollar-sign text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-arrow-up text-green-500 text-sm mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium">8%</span>
+                                <span class="text-gray-500 text-sm ml-2">vs last quarter</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- People Served Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-inter font-bold text-dark-gray mb-4">People Served Over Time</h3>
+                        <div class="chart-container">
+                            <canvas id="peopleServedChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Regional Distribution Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-inter font-bold text-dark-gray mb-4">Regional Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="regionalChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Status Table -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-inter font-bold text-dark-gray">Recent Projects</h3>
+                        <button class="text-water-blue hover:text-blue-600 font-medium">View All</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">People Served</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completion</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="font-medium text-gray-900">Kambi Primary School Well</div>
+                                        <div class="text-sm text-gray-500">Borehole Installation</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Kenya</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1,247</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">100%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="font-medium text-gray-900">Mwanzi Community Spring</div>
+                                        <div class="text-sm text-gray-500">Spring Protection</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Uganda</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">892</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">In Progress</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">75%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="font-medium text-gray-900">Nakuru Health Center</div>
+                                        <div class="text-sm text-gray-500">Sanitation Facilities</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Kenya</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2,156</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Planning</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">25%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section id="gallery" class="section-content hidden">
+        <div class="pt-20 pb-16 bg-light-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-inter font-bold text-dark-gray mb-4">Photo Gallery</h2>
+                    <p class="text-lg text-gray-600">Witness the transformative power of clean water in communities worldwide</p>
+                </div>
+
+                <!-- Gallery Filters -->
+                <div class="flex flex-wrap justify-center mb-8 space-x-2 space-y-2">
+                    <button class="gallery-filter active bg-water-blue text-white px-4 py-2 rounded-md" data-filter="all">All</button>
+                    <button class="gallery-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300" data-filter="projects">Water Projects</button>
+                    <button class="gallery-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300" data-filter="access">Clean Water Access</button>
+                    <button class="gallery-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300" data-filter="infrastructure">Infrastructure</button>
+                    <button class="gallery-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300" data-filter="communities">Communities</button>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Water aid projects images -->
+                    <div class="gallery-item projects card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- Children gathered around a newly installed water well in a rural African village -->
+                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Children at water well" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">New Water Well in Kenya</h3>
+                                <p class="text-sm text-gray-600">Providing clean water access to 1,200 community members</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item access card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- A woman filling water containers from a clean water tap in an urban setting -->
+                            <img src="https://pixabay.com/get/gc4739e0659f4aeb986df984afeb27ff2ed4e81589d87bfc83cecf25249c27490a12b782c9b5efc1b20666c8ef9a4aa353b7d77476d6ec6e9bc2f38ce1c62517a_1280.jpg" alt="Woman accessing clean water" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">Clean Water Access Point</h3>
+                                <p class="text-sm text-gray-600">Safe water collection in urban communities</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item infrastructure card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- Water treatment plant with modern filtration equipment -->
+                            <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Water treatment infrastructure" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">Water Treatment Facility</h3>
+                                <p class="text-sm text-gray-600">Advanced filtration systems ensuring water quality</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item communities card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- Happy family with children drinking clean water outside their home -->
+                            <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Family with clean water" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">Community Transformation</h3>
+                                <p class="text-sm text-gray-600">Families enjoying the benefits of clean water access</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item projects card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- Workers installing water pipes in a rural area -->
+                            <img src="https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Water pipeline installation" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">Pipeline Installation</h3>
+                                <p class="text-sm text-gray-600">Connecting remote communities to clean water sources</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item access card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- School children washing hands at a clean water station -->
+                            <img src="https://images.unsplash.com/photo-1594908900066-3f47337549d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Children washing hands" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">School Hygiene Program</h3>
+                                <p class="text-sm text-gray-600">Teaching proper handwashing with clean water</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item infrastructure card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- Solar-powered water pump system in a desert landscape -->
+                            <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Solar water pump system" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">Solar Water Pumping</h3>
+                                <p class="text-sm text-gray-600">Sustainable energy solutions for water access</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item communities card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- Community celebration with people dancing around a new water source -->
+                            <img src="https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Community celebration" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">Community Celebration</h3>
+                                <p class="text-sm text-gray-600">Celebrating the completion of a new water project</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-item projects card-hover smooth-transition">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                            <!-- Water quality testing being conducted by a technician -->
+                            <img src="https://pixabay.com/get/gbd4b92f245612433accdd55a6fa501a860875d936338f536aecd57ac25eccc65926331dd6bce87a03a5780c2f4727e0b81ab79b577a18863d114af31d86ad9dc_1280.jpg" alt="Water quality testing" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(this)">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">Water Quality Testing</h3>
+                                <p class="text-sm text-gray-600">Ensuring safe drinking water standards</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark-gray text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-tint text-water-blue text-2xl mr-3"></i>
+                        <h3 class="text-xl font-inter font-bold">Water Aid Impact</h3>
+                    </div>
+                    <p class="text-gray-300">Transforming lives through clean water, sanitation, and hygiene programs worldwide.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-water-blue transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-water-blue transition-colors">Our Work</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-water-blue transition-colors">Impact Stories</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-water-blue transition-colors">Get Involved</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><i class="fas fa-phone mr-2"></i> +1-800-WATER-AID</li>
+                        <li><i class="fas fa-envelope mr-2"></i> info@wateraidimpact.org</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i> 123 Water Street, Global City</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-water-blue transition-colors text-xl">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-water-blue transition-colors text-xl">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-water-blue transition-colors text-xl">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-water-blue transition-colors text-xl">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-600 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 Water Aid Impact. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation and Section Management
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section-content');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update navigation active state
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Counter Animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter-number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 2000; // 2 seconds
+                const increment = target / (duration / 16); // 60 FPS
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current).toLocaleString();
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target.toLocaleString();
+                    }
+                };
+                
+                updateCounter();
+            });
+        }
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Excel Upload Handling
+        document.getElementById('excel-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // TODO: Implement actual Excel file processing
+                console.log('Excel file selected:', file.name);
+                alert('Excel file uploaded successfully! (This is a demo - real implementation would parse the Excel data)');
+            }
+        });
+
+        // Gallery Filter Functionality
+        function setupGalleryFilters() {
+            const filterButtons = document.querySelectorAll('.gallery-filter');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-water-blue', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    button.classList.add('active', 'bg-water-blue', 'text-white');
+                    button.classList.remove('bg-gray-200', 'text-gray-700');
+                    
+                    // Filter gallery items
+                    galleryItems.forEach(item => {
+                        if (filter === 'all' || item.classList.contains(filter)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
+
+        // Modal Functions
+        function openModal(img) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = img.src;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+
+        // Chart Initialization (Mock Data)
+        function initializeCharts() {
+            // TODO: Implement actual chart rendering using Chart.js or similar
+            console.log('Charts would be initialized here with real data from Excel file');
+            
+            // Mock chart data for demonstration
+            const chartData = {
+                peopleServed: [650000, 720000, 780000, 850000, 896000],
+                regions: {
+                    'Sub-Saharan Africa': 65,
+                    'South Asia': 20,
+                    'East Asia': 10,
+                    'Latin America': 5
+                }
+            };
+            
+            console.log('Chart data:', chartData);
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Observe all fade-in elements
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach(el => observer.observe(el));
+            
+            // Initialize counters after a short delay
+            setTimeout(animateCounters, 500);
+            
+            // Setup gallery filters
+            setupGalleryFilters();
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Setup smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Close modal when clicking outside the image
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('imageModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

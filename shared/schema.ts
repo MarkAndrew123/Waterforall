@@ -33,6 +33,17 @@ export const galleryImages = pgTable("gallery_images", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Community Stories
+export const stories = pgTable("stories", {
+  id: serial("id").primaryKey(),
+  caption: text("caption").notNull(),
+  description: text("description").notNull(),
+  imageUrl: text("image_url").notNull(),
+  authorName: text("author_name").notNull(),
+  location: text("location").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertWaterProjectSchema = createInsertSchema(waterProjects).omit({
   id: true,
   createdAt: true,
@@ -48,9 +59,13 @@ export const insertGalleryImageSchema = createInsertSchema(galleryImages).omit({
   createdAt: true,
 });
 
+export const insertStorySchema = createInsertSchema(stories).omit({ id: true, createdAt: true });
+
 export type WaterProject = typeof waterProjects.$inferSelect;
 export type InsertWaterProject = z.infer<typeof insertWaterProjectSchema>;
 export type WaterStatistics = typeof waterStatistics.$inferSelect;
 export type InsertWaterStatistics = z.infer<typeof insertWaterStatisticsSchema>;
 export type GalleryImage = typeof galleryImages.$inferSelect;
 export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
+export type Story = typeof stories.$inferSelect;
+export type InsertStory = z.infer<typeof insertStorySchema>;
