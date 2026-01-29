@@ -1,7 +1,8 @@
+import 'dotenv/config';
 import express from "express";
 import serverless from "serverless-http";
 import { storage } from "../../server/storage";
-import { insertWaterProjectSchema, insertWaterStatisticsSchema, insertGalleryImageSchema } from "../../shared/schema";
+import { insertWaterProjectSchema, insertWaterStatisticsSchema, insertGalleryImageSchema, insertStorySchema } from "../../shared/schema";
 
 const app = express();
 app.use(express.json());
@@ -95,6 +96,26 @@ app.post("/api/gallery-images", async (req, res) => {
     }
 });
 
+// Community Stories Routes
+app.get("/api/stories", async (_req, res) => {
+    try {
+        const stories = await storage.getStories();
+        res.json(stories);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch stories" });
+    }
+});
+
+app.post("/api/stories", async (req, res) => {
+    try {
+        const validatedData = insertStorySchema.parse(req.body);
+        const story = await storage.createStory(validatedData);
+        res.json(story);
+    } catch (error) {
+        res.status(400).json({ error: "Invalid story data" });
+    }
+});
+
 // Dashboard Analytics Route
 app.get("/api/dashboard-analytics", async (_req, res) => {
     try {
@@ -118,6 +139,11 @@ app.get("/api/dashboard-analytics", async (_req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch dashboard analytics" });
     }
+});
+
+// Health check
+app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 export const handler = serverless(app);
