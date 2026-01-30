@@ -78,7 +78,7 @@ export default function Footer() {
                 <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
                   <Phone className="w-4 h-4" />
                 </div>
-                <span>08057478738</span>
+                <span>08168619529</span>
               </li>
               <li className="flex items-center gap-3 text-slate-400">
                 <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
